@@ -1,5 +1,6 @@
 package com.notes.notes;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.sql.Date;
@@ -58,6 +59,7 @@ class NotesApplicationTests {
 		Notes note = new Notes(1L, 1L, 1L, Date.valueOf(LocalDate.now()), Date.valueOf(LocalDate.now()),
 				"Lorem ipsum dolor sit amet, consectetur");
 
+		when(notesRepository.save(note)).thenReturn((note));
 		mvc.perform(MockMvcRequestBuilders
 				.post("/notes/add")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -100,11 +102,23 @@ class NotesApplicationTests {
 	// Test4: delete a note with id
 	@Test
 	public void canDeleteANote() throws Exception {
+		Long noteId = 1l;
+		doNothing().when(notesRepository).deleteById(noteId);
 		mvc.perform(MockMvcRequestBuilders
 				.delete("/notes/1"))
 				.andExpect(MockMvcResultMatchers.status().isOk());
 	}
 
 	// Test5: update a note with id
-
+	@Test
+	public void canUpdateANote() throws Exception {
+		Notes updatenote = new Notes(1L, 1L, 1L, Date.valueOf(LocalDate.now()), Date.valueOf(LocalDate.now()),
+				"Lorem ipsum dolor sit amet, consectetur");
+		when(notesRepository.save(updatenote)).thenReturn((updatenote));
+		mvc.perform(MockMvcRequestBuilders
+				.put("/notes/update")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonNote.write(updatenote).getJson()))
+				.andExpect(MockMvcResultMatchers.status().isOk());
+	}
 }

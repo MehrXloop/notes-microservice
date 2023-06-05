@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.notes.notes.Model.Notes;
 import com.notes.notes.Repository.INotesRepository;
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/notes")
 public class NotesController {
@@ -53,14 +54,21 @@ public class NotesController {
 
 
     //Update a note with id
-    @PutMapping("/update/{id}")
-    public String updateNote(@PathVariable Long id, @RequestBody Notes updateNote){
-        Optional<Notes> note =  notesRepository.findById(id);
-        Notes note2 = note.get();
-        note2.setContent(updateNote.getContent());
-        note2.setUpdated(updateNote.getUpdated());
-        notesRepository.save(note2);
+    @PutMapping("/update")
+    public String updateNote(@RequestBody Notes updateNote){
+        Optional<Notes> note =  notesRepository.findById(updateNote.getId());
 
-        return "Note has updated successfully";
+        if(note.isPresent()){
+            Notes note2 = note.get();
+            note2.setContent(updateNote.getContent());
+            note2.setUpdated(updateNote.getUpdated());
+            notesRepository.save(note2);
+            
+            return "Note has updated successfully";
+        }else{
+            return "Note does not exist";
+        }
+
+
     }
 }
