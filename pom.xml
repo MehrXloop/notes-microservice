@@ -64,7 +64,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>hello</finalName>
+		<finalName>notes</finalName>
 	</build>
 
 </project>
