@@ -38,6 +38,12 @@ public class NotesController {
         Optional<Notes> note =  notesRepository.findById(id);
         return ResponseEntity.ok().body(note.get());
     }
+    //getting notes by patient id
+    @GetMapping("/notesByPatientId/{patientId}")
+    public Collection<Notes> getNotesByPatientId(@PathVariable Long patientId){
+        return notesRepository.findByPatientId(patientId);
+    }
+
 
     // Getting all notes
     @GetMapping("/all")
