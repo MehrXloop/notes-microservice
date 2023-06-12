@@ -106,14 +106,16 @@ class NotesApplicationTests {
 		doNothing().when(notesRepository).deleteById(noteId);
 		mvc.perform(MockMvcRequestBuilders
 				.delete("/notes/1"))
-				.andExpect(MockMvcResultMatchers.status().isOk());
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 
 	// Test5: update a note with id
 	@Test
 	public void canUpdateANote() throws Exception {
+		Long noteId = 1L;
 		Notes updatenote = new Notes(1L, 1L, 1L, Date.valueOf(LocalDate.now()), Date.valueOf(LocalDate.now()),
 				"Lorem ipsum dolor sit amet, consectetur");
+		when(notesRepository.findById(noteId)).thenReturn(Optional.of(updatenote));
 		when(notesRepository.save(updatenote)).thenReturn((updatenote));
 		mvc.perform(MockMvcRequestBuilders
 				.put("/notes/update")

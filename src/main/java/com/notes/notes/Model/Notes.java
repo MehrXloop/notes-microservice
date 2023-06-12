@@ -33,6 +33,7 @@ public class Notes {
     private Long patientId;
     private Date created;
     private Date updated;
+    
     @Column(length = 1000)
     private String content;
 
