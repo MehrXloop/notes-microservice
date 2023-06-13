@@ -3,8 +3,7 @@ package com.notes.notes;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-import java.sql.Date;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.notes.notes.Controller.NotesController;
 import com.notes.notes.Model.Notes;
 import com.notes.notes.Repository.INotesRepository;
@@ -47,18 +48,21 @@ class NotesApplicationTests {
 	private JacksonTester<List<Notes>> jsonNotes;
 
 	@BeforeEach
-	public void setUp() {
-		JacksonTester.initFields(this, new ObjectMapper());
-		mvc = MockMvcBuilders.standaloneSetup(notesController).build();
-	}
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+        JacksonTester.initFields(this, new ObjectMapper().registerModule(new JavaTimeModule()));
+        ;
+        mvc = MockMvcBuilders.standaloneSetup(notesController).build();
+    }
 
 	// Test1: posting a note
 
 	@Test
 	public void canPostANote() throws Exception {
-		Notes note = new Notes(1L, 1L, 1L, Date.valueOf(LocalDate.now()), Date.valueOf(LocalDate.now()),
+		ZonedDateTime now = ZonedDateTime.now();
+		Notes note = new Notes(1L, 1L, 1L, now, now,
 				"Lorem ipsum dolor sit amet, consectetur");
-
+	
 		when(notesRepository.save(note)).thenReturn((note));
 		mvc.perform(MockMvcRequestBuilders
 				.post("/notes/add")
@@ -70,23 +74,25 @@ class NotesApplicationTests {
 	// Test2: Getting a note with id
 	@Test
 	public void canGetANote() throws Exception {
-		Notes note1 = new Notes(1L, 1L, 1L, Date.valueOf(LocalDate.now()), Date.valueOf(LocalDate.now()),
+		ZonedDateTime now = ZonedDateTime.now();
+		Notes note = new Notes(1L, 1L, 1L, now, now,
 				"Lorem ipsum dolor sit amet, consectetur");
-		when(notesRepository.findById(1L)).thenReturn(Optional.of(note1));
+		when(notesRepository.findById(1L)).thenReturn(Optional.of(note));
 
 		mvc.perform(MockMvcRequestBuilders.get("/notes/1")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().json(jsonNote.write(note1).getJson()));
+				.andExpect(MockMvcResultMatchers.content().json(jsonNote.write(note).getJson()));
 	}
 
 	// Test3: Getting a list of notes
 	@Test
 	public void canGetAllNotes() throws Exception {
-		Notes note1 = new Notes(1L, 1L, 1L, Date.valueOf(LocalDate.now()), Date.valueOf(LocalDate.now()),
+		ZonedDateTime now = ZonedDateTime.now();
+		Notes note1 = new Notes(1L, 1L, 1L, now, now,
 				"Lorem ipsum dolor sit amet, consectetur");
-		Notes note2 = new Notes(2L, 2L, 2L, Date.valueOf(LocalDate.now()), Date.valueOf(LocalDate.now()),
-				"Lorem ipsum dolor ");
+				Notes note2 = new Notes(1L, 1L, 1L, now, now,
+				"Lorem ipsum dolor sit amet, consectetur");
 		List<Notes> noteList = new ArrayList<>();
 		noteList.add(note1);
 		noteList.add(note2);
@@ -113,7 +119,8 @@ class NotesApplicationTests {
 	@Test
 	public void canUpdateANote() throws Exception {
 		Long noteId = 1L;
-		Notes updatenote = new Notes(1L, 1L, 1L, Date.valueOf(LocalDate.now()), Date.valueOf(LocalDate.now()),
+		ZonedDateTime now = ZonedDateTime.now();
+		Notes updatenote = new Notes(1L, 1L, 1L, now, now,
 				"Lorem ipsum dolor sit amet, consectetur");
 		when(notesRepository.findById(noteId)).thenReturn(Optional.of(updatenote));
 		when(notesRepository.save(updatenote)).thenReturn((updatenote));

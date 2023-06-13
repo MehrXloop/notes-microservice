@@ -1,6 +1,7 @@
 package com.notes.notes.Model;
 
 import java.sql.Date;
+import java.time.ZonedDateTime;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
@@ -31,8 +32,9 @@ public class Notes {
 
     @Nonnull
     private Long patientId;
-    private Date created;
-    private Date updated;
+    
+    private ZonedDateTime created;
+    private ZonedDateTime updated;
     
     @Column(length = 1000)
     private String content;
