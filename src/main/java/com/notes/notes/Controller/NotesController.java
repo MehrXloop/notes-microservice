@@ -100,4 +100,11 @@ public class NotesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+     
+    //deleting all notes
+    @DeleteMapping("/deleteall")
+    public void deleteAllNotes(){
+        notesRepository.deleteAll();
+    }
+
 }
