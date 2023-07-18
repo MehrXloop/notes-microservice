@@ -48,6 +48,21 @@ public class NotesController {
         }
     }
 
+    // Getting notes by ID for deg
+    @GetMapping("/get/{id}")
+    public ResponseEntity<Notes> getNotesForDeg(@PathVariable Long id) {
+        try {
+            Optional<Notes> note = notesRepository.findById(id);
+            if (note.isPresent()) {
+                return ResponseEntity.ok().body(note.get());
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     // Getting notes by patient ID
     @GetMapping("/notesByPatientId/{patientId}")
     public ResponseEntity<Collection<Notes>> getNotesByPatientId(@PathVariable Long patientId) {
@@ -62,6 +77,17 @@ public class NotesController {
     // Getting all notes
     @GetMapping("/all")
     public ResponseEntity<Collection<Notes>> getAllNotes() {
+        try {
+            Collection<Notes> notes = notesRepository.findAll();
+            return ResponseEntity.ok().body(notes);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // Getting all notes for deg
+    @GetMapping("")
+    public ResponseEntity<Collection<Notes>> getAllNotesForDeg() {
         try {
             Collection<Notes> notes = notesRepository.findAll();
             return ResponseEntity.ok().body(notes);
